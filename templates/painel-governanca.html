@@ -1,0 +1,722 @@
+<title>Painel de Governança — Nexora Software Factory</title>
+
+<style>
+  :root {
+    /* ground / structure */
+    --ground: #F0F3F3;
+    --surface: #FFFFFF;
+    --surface-2: #E7EDEC;
+    --line: #D5DEDD;
+    --line-strong: #B4C2C1;
+    --text: #121D1E;
+    --text-muted: #637375;
+    --accent: #17505E;
+    --accent-soft: #DBE8EB;
+
+    /* estado (semântico — independente do acento) */
+    --ok: #2C7A52;
+    --run: #A56C14;
+    --block: #A6392B;
+    --idle: #8A999A;
+
+    --font-display: "Bahnschrift", "Archivo Narrow", "Franklin Gothic Medium", "Avenir Next Condensed", "Helvetica Neue", sans-serif;
+    --font-body: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "Cascadia Mono", Consolas, ui-monospace, "SF Mono", Menlo, monospace;
+
+    --r: 3px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #0E1517;
+      --surface: #151E20;
+      --surface-2: #1B2528;
+      --line: #263133;
+      --line-strong: #38474A;
+      --text: #E3EAEA;
+      --text-muted: #8D9E9F;
+      --accent: #5FB2C5;
+      --accent-soft: #17313A;
+
+      --ok: #52AC7D;
+      --run: #D6A046;
+      --block: #D96F5B;
+      --idle: #6A7A7B;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0E1517;
+    --surface: #151E20;
+    --surface-2: #1B2528;
+    --line: #263133;
+    --line-strong: #38474A;
+    --text: #E3EAEA;
+    --text-muted: #8D9E9F;
+    --accent: #5FB2C5;
+    --accent-soft: #17313A;
+    --ok: #52AC7D;
+    --run: #D6A046;
+    --block: #D96F5B;
+    --idle: #6A7A7B;
+  }
+
+  :root[data-theme="light"] {
+    --ground: #F0F3F3;
+    --surface: #FFFFFF;
+    --surface-2: #E7EDEC;
+    --line: #D5DEDD;
+    --line-strong: #B4C2C1;
+    --text: #121D1E;
+    --text-muted: #637375;
+    --accent: #17505E;
+    --accent-soft: #DBE8EB;
+    --ok: #2C7A52;
+    --run: #A56C14;
+    --block: #A6392B;
+    --idle: #8A999A;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- tipografia ---------- */
+  h1, h2, h3 { font-family: var(--font-display); font-stretch: 90%; text-wrap: balance; margin: 0; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  h2.section {
+    font-size: 15px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  h2.section::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  h2.section .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-stretch: normal;
+  }
+
+  /* ---------- cabeçalho ---------- */
+  .masthead {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--r);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .masthead-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .brand { display: flex; flex-direction: column; gap: 4px; }
+
+  .brand h1 {
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1.05;
+  }
+  .brand h1 .placeholder { color: var(--text-muted); font-weight: 400; }
+
+  .tag-template {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--r);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .meta div { background: var(--surface); padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; }
+  .meta dt { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .meta dd { margin: 0; font-size: 14px; font-weight: 600; }
+  .meta dd.empty { font-weight: 400; color: var(--text-muted); }
+
+  /* ---------- régua de gates ---------- */
+  .rail-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+  .rail {
+    display: grid;
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+    gap: 2px;
+  }
+  @media (max-width: 860px) {
+    .rail { grid-template-columns: repeat(auto-fit, minmax(74px, 1fr)); }
+  }
+
+  .seg {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--state, var(--idle));
+    border-radius: 0 0 var(--r) var(--r);
+    padding: 8px 5px 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    text-align: center;
+    min-width: 0;
+    transition: background 120ms ease, transform 120ms ease;
+  }
+  .seg:hover { background: var(--surface-2); }
+  .seg[data-current="true"] {
+    background: var(--accent-soft);
+    border-color: var(--line-strong);
+    border-top-color: var(--run);
+    box-shadow: inset 0 -2px 0 var(--run);
+  }
+  .seg .n {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+  }
+  .seg[data-current="true"] .n { color: var(--text); font-weight: 700; }
+  .seg .lbl {
+    font-family: var(--font-display);
+    font-stretch: 87.5%;
+    font-size: 11.5px;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    hyphens: auto;
+  }
+
+  .rail-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    align-items: center;
+  }
+  .lg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+  .lg i { width: 16px; height: 4px; border-radius: 1px; background: var(--c); display: inline-block; }
+
+  /* ---------- números de topo ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .tile {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--edge, var(--accent));
+    border-radius: var(--r);
+    padding: 13px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tile .k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .tile .v {
+    font-family: var(--font-display);
+    font-stretch: 90%;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .tile .sub { font-size: 12px; color: var(--text-muted); }
+
+  /* ---------- blocos ---------- */
+  .block { display: flex; flex-direction: column; gap: 12px; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+  }
+
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 26px; align-items: start; }
+  @media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } }
+
+  .scroll { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 400;
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line-strong);
+    white-space: nowrap;
+  }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--surface-2); }
+  td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); width: 34px; }
+  td.name { font-weight: 600; white-space: nowrap; }
+  td.id { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .muted { color: var(--text-muted); }
+  .dash { color: var(--text-muted); font-family: var(--font-mono); }
+
+  tr[data-sev] td:first-child { box-shadow: inset 3px 0 0 var(--sev); }
+  tr[data-sev="alto"] { --sev: var(--block); }
+  tr[data-sev="medio"] { --sev: var(--run); }
+  tr[data-sev="baixo"] { --sev: var(--ok); }
+
+  /* ---------- pílulas ---------- */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    color: var(--pc, var(--idle));
+    background: color-mix(in srgb, var(--pc, var(--idle)) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--pc, var(--idle)) 34%, transparent);
+  }
+  .pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .pill.ok { --pc: var(--ok); }
+  .pill.run { --pc: var(--run); }
+  .pill.block { --pc: var(--block); }
+  .pill.idle { --pc: var(--idle); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: var(--r);
+    border: 1px solid var(--line-strong);
+    color: var(--text-muted);
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  .chip.on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+  /* ---------- coluna lateral ---------- */
+  .side { display: flex; flex-direction: column; gap: 22px; }
+  .side .body { padding: 13px 15px; display: flex; flex-direction: column; gap: 10px; }
+
+  ul.todo { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  ul.todo li { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
+  ul.todo li .who { align-self: flex-start; }
+
+  .hint {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    border-left: 2px solid var(--line-strong);
+    padding-left: 10px;
+  }
+
+  /* ---------- rodapé de uso ---------- */
+  .usage {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .usage ol { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+  .usage code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 1px 5px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="page">
+
+  <!-- ================= CABEÇALHO ================= -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <div class="brand">
+        <span class="eyebrow">Nexora Software Factory · Painel de Governança</span>
+        <h1><span class="placeholder">⟨ nome do projeto ⟩</span></h1>
+      </div>
+      <span class="tag-template">Template · conteúdo de exemplo</span>
+    </div>
+
+    <dl class="meta">
+      <div><dt>Tipo de projeto</dt><dd class="empty">⟨ site / marketplace / app / IA ⟩</dd></div>
+      <div><dt>Início</dt><dd class="empty">⟨ dd/mm/aaaa ⟩</dd></div>
+      <div><dt>Gate atual</dt><dd>03 · Arquitetura</dd></div>
+      <div><dt>Responsável</dt><dd class="empty">⟨ nome ⟩</dd></div>
+      <div><dt>Atualizado em</dt><dd class="empty">⟨ dd/mm/aaaa ⟩</dd></div>
+    </dl>
+  </header>
+
+  <!-- ================= RÉGUA DOS 13 GATES ================= -->
+  <section class="rail-wrap">
+    <h2 class="section">Linha de gates <span class="count">3 / 13</span></h2>
+    <div class="rail">
+      <div class="seg" style="--state: var(--ok)"><span class="n">01</span><span class="lbl">Descoberta</span></div>
+      <div class="seg" style="--state: var(--ok)"><span class="n">02</span><span class="lbl">Requisitos</span></div>
+      <div class="seg" data-current="true" style="--state: var(--run)"><span class="n">03</span><span class="lbl">Arquitetura</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">04</span><span class="lbl">UX/UI</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">05</span><span class="lbl">Planej. técnico</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">06</span><span class="lbl">Desenvolv.</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">07</span><span class="lbl">Testes</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">08</span><span class="lbl">Segurança</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">09</span><span class="lbl">Performance</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">10</span><span class="lbl">Deploy</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">11</span><span class="lbl">Monitoram.</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">12</span><span class="lbl">Documentação</span></div>
+      <div class="seg" style="--state: var(--idle)"><span class="n">13</span><span class="lbl">Entrega</span></div>
+    </div>
+    <div class="rail-legend">
+      <span class="lg" style="--c: var(--ok)"><i></i>Aprovado pelo usuário</span>
+      <span class="lg" style="--c: var(--run)"><i></i>Em andamento</span>
+      <span class="lg" style="--c: var(--block)"><i></i>Bloqueado</span>
+      <span class="lg" style="--c: var(--idle)"><i></i>Não iniciado</span>
+    </div>
+  </section>
+
+  <!-- ================= INDICADORES ================= -->
+  <section class="tiles">
+    <div class="tile" style="--edge: var(--ok)">
+      <span class="k">Gates aprovados</span>
+      <span class="v">2<span class="muted" style="font-size:17px">/13</span></span>
+      <span class="sub">15% do fluxo concluído</span>
+    </div>
+    <div class="tile" style="--edge: var(--block)">
+      <span class="k">Riscos abertos</span>
+      <span class="v">2</span>
+      <span class="sub">1 de impacto alto</span>
+    </div>
+    <div class="tile" style="--edge: var(--run)">
+      <span class="k">Pendências do usuário</span>
+      <span class="v">2</span>
+      <span class="sub">bloqueiam o gate 03</span>
+    </div>
+    <div class="tile" style="--edge: var(--accent)">
+      <span class="k">Decisões registradas</span>
+      <span class="v">2</span>
+      <span class="sub">ADR-001 · ADR-002</span>
+    </div>
+  </section>
+
+  <!-- ================= GATES + LATERAL ================= -->
+  <div class="split">
+
+    <section class="block">
+      <h2 class="section">Situação por gate</h2>
+      <div class="panel scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nº</th>
+              <th>Gate</th>
+              <th>Status</th>
+              <th>Departamentos</th>
+              <th>Entregável</th>
+              <th>Aprovado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num">01</td>
+              <td class="name">Descoberta</td>
+              <td><span class="pill ok">Aprovado</span></td>
+              <td><div class="chips"><span class="chip">produto</span></div></td>
+              <td class="muted">Briefing consolidado</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">02</td>
+              <td class="name">Requisitos</td>
+              <td><span class="pill ok">Aprovado</span></td>
+              <td><div class="chips"><span class="chip">produto</span></div></td>
+              <td class="muted">PRD + backlog priorizado</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">03</td>
+              <td class="name">Arquitetura</td>
+              <td><span class="pill run">Em andamento</span></td>
+              <td><div class="chips"><span class="chip">arquitetura</span><span class="chip">banco-dados</span></div></td>
+              <td class="muted">ADRs + diagrama C4 + stack</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">04</td>
+              <td class="name">UX/UI</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">ux-ui</span></div></td>
+              <td class="muted">Wireflow + design system</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">05</td>
+              <td class="name">Planejamento técnico</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">arquitetura</span><span class="chip">qualidade</span></div></td>
+              <td class="muted">Quebra em tarefas + critérios</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">06</td>
+              <td class="name">Desenvolvimento</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">frontend</span><span class="chip">backend</span><span class="chip">banco-dados</span></div></td>
+              <td class="muted">Código + PRs por incremento</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">07</td>
+              <td class="name">Testes</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">qualidade</span></div></td>
+              <td class="muted">Plano de testes + cobertura</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">08</td>
+              <td class="name">Segurança</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">seguranca</span></div></td>
+              <td class="muted">Relatório OWASP + LGPD</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">09</td>
+              <td class="name">Performance</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">arquitetura</span><span class="chip">devops</span></div></td>
+              <td class="muted">Benchmarks + orçamento de perf.</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">10</td>
+              <td class="name">Deploy</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">devops</span></div></td>
+              <td class="muted">Pipeline CI/CD + ambientes</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">11</td>
+              <td class="name">Monitoramento</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">devops</span></div></td>
+              <td class="muted">Métricas, logs, alertas</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">12</td>
+              <td class="name">Documentação</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">documentacao</span></div></td>
+              <td class="muted">README + doc de API + manual</td>
+              <td class="id">—</td>
+            </tr>
+            <tr>
+              <td class="num">13</td>
+              <td class="name">Entrega</td>
+              <td><span class="pill idle">Não iniciado</span></td>
+              <td><div class="chips"><span class="chip">todos</span></div></td>
+              <td class="muted">Pacote final + handover</td>
+              <td class="id">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint">A coluna “Entregável” aponta para o artefato de cada gate. Publique cada entrega como artefato próprio e troque o texto pelo link — este painel vira o índice do projeto.</p>
+    </section>
+
+    <aside class="side">
+
+      <section class="block">
+        <h2 class="section">Departamentos <span class="count">2 / 11</span></h2>
+        <div class="panel body">
+          <div class="chips">
+            <span class="chip on">produto</span>
+            <span class="chip on">arquitetura</span>
+            <span class="chip">ux-ui</span>
+            <span class="chip">frontend</span>
+            <span class="chip">backend</span>
+            <span class="chip">banco-dados</span>
+            <span class="chip">devops</span>
+            <span class="chip">seguranca</span>
+            <span class="chip">ia</span>
+            <span class="chip">qualidade</span>
+            <span class="chip">documentacao</span>
+          </div>
+          <p class="hint">Destacados = já acionados neste projeto. Nem todo projeto usa os 11.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="section">Pendências <span class="count">2</span></h2>
+        <div class="panel body">
+          <ul class="todo">
+            <li>
+              <span class="pill block who">Usuário</span>
+              <span>Confirmar volume esperado de usuários simultâneos — define se a stack precisa de fila.</span>
+            </li>
+            <li>
+              <span class="pill block who">Usuário</span>
+              <span>Definir orçamento mensal de infraestrutura antes da escolha de cloud.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="section">Última movimentação</h2>
+        <div class="panel body">
+          <p class="hint" style="border-color: var(--run)">Gate 02 aprovado. Departamento <strong>arquitetura</strong> acionado para propor stack e estrutura de pastas. Aguardando as duas pendências acima para fechar o ADR-003.</p>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <!-- ================= RISCOS ================= -->
+  <section class="block">
+    <h2 class="section">Registro de riscos <span class="count">2 abertos</span></h2>
+    <div class="panel scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Risco</th>
+            <th>Gate</th>
+            <th>Impacto</th>
+            <th>Prob.</th>
+            <th>Mitigação</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-sev="alto">
+            <td class="id">R-001</td>
+            <td>Requisito de escala ainda indefinido pode invalidar a escolha de arquitetura já em curso.</td>
+            <td class="num">03</td>
+            <td>Alto</td>
+            <td>Média</td>
+            <td>Manter a camada de persistência atrás de interface para permitir troca sem reescrita.</td>
+            <td><span class="pill run">Aberto</span></td>
+          </tr>
+          <tr data-sev="medio">
+            <td class="id">R-002</td>
+            <td>Escopo de UX ainda não validado com usuários reais — risco de retrabalho no gate 06.</td>
+            <td class="num">04</td>
+            <td>Médio</td>
+            <td>Alta</td>
+            <td>Validar wireflow com 3 usuários antes de liberar o gate de UX/UI.</td>
+            <td><span class="pill run">Aberto</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= DECISÕES ================= -->
+  <section class="block">
+    <h2 class="section">Decisões técnicas <span class="count">2 registradas</span></h2>
+    <div class="panel scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Decisão</th>
+            <th>Justificativa</th>
+            <th>Gate</th>
+            <th>Alternativas descartadas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="id">ADR-001</td>
+            <td class="name">Escopo em duas fases</td>
+            <td>Reduz o tempo até a primeira entrega utilizável e permite validar as premissas de produto antes do investimento maior.</td>
+            <td class="num">02</td>
+            <td class="muted">Entrega única “big bang”</td>
+          </tr>
+          <tr>
+            <td class="id">ADR-002</td>
+            <td class="name">Monolito modular</td>
+            <td>Time pequeno e domínio ainda instável — microsserviços adicionariam custo operacional sem benefício mensurável nesta fase.</td>
+            <td class="num">03</td>
+            <td class="muted">Microsserviços · serverless puro</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= COMO USAR ================= -->
+  <footer class="usage">
+    <h2 class="section">Como manter este painel</h2>
+    <ol>
+      <li>Peça <code>“atualiza o painel de governança”</code> ao fim de cada gate — republico no <strong>mesmo link</strong>, preservando o histórico de versões.</li>
+      <li>Cada gate concluído gera um artefato próprio (PRD, ADRs, wireflow, plano de testes). O link dele entra na coluna <em>Entregável</em>.</li>
+      <li>Riscos e decisões são <strong>acumulativos</strong>: nunca apague uma linha — mude o status para mitigado ou superado.</li>
+      <li>Nenhum gate avança sem aprovação explícita sua. A cor da régua no topo é a fonte da verdade do estado do projeto.</li>
+      <li>Arquivo-fonte deste template: <code>templates/painel-governanca.html</code> — copie para cada novo projeto em vez de sobrescrever.</li>
+    </ol>
+  </footer>
+
+</div>

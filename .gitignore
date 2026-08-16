@@ -1,0 +1,13 @@
+# Configuração local do Claude Code (pessoal, não versionar)
+.claude/settings.local.json
+
+# Artefatos gerados pelos projetos construídos pela fábrica
+node_modules/
+dist/
+build/
+*.log
+
+# Sistema operacional
+Thumbs.db
+desktop.ini
+.DS_Store
