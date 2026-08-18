@@ -1,0 +1,42 @@
+name: Nexora Orquestrador
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  orquestrador:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v3
+
+      - name: Detectar nova feature
+        if: startsWith(github.event.issue.title, 'Nova Feature')
+        run: |
+          echo "Orquestrador acionado para: ${{ github.event.issue.title }}"
+          echo "Descrição: ${{ github.event.issue.body }}"
+
+          # Distribuir para os agentes
+          echo "## Nova Feature: ${{ github.event.issue.title }}" >> .claude/agentes/produto.md
+          echo "${{ github.event.issue.body }}" >> .claude/agentes/produto.md
+
+          echo "## Nova Feature: ${{ github.event.issue.title }}" >> .claude/agentes/arquitetura.md
+          echo "Solicitação: Definir arquitetura e autenticação" >> .claude/agentes/arquitetura.md
+
+          echo "## Nova Feature: ${{ github.event.issue.title }}" >> .claude/agentes/frontend.md
+          echo "Solicitação: Criar interface responsiva" >> .claude/agentes/frontend.md
+
+          echo "## Nova Feature: ${{ github.event.issue.title }}" >> .claude/agentes/backend.md
+          echo "Solicitação: Implementar API e regras de negócio" >> .claude/agentes/backend.md
+
+      - name: Commitar alterações
+        run: |
+          git config --global user.name "Orquestrador Bot"
+          git config --global user.email "bot@nexora.com"
+          git add .
+          git commit -m "Orquestrador: acionando agentes para ${{ github.event.issue.title }}"
+          git push
+
+          git commit -m "Orquestrador: acionando agentes para ${{ github.event.issue.title }}"
+          git push
