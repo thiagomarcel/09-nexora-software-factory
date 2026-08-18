@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Nexora Software Factory — pacote para Claude Code
 
 Este pacote implementa o framework "Nexora Software Factory" como um
@@ -58,3 +59,6 @@ nexora-software-factory/
 - Os campos `tools` de cada subagente já seguem o princípio de menor
   privilégio (ex: `qa` não tem acesso a infraestrutura). Ajuste conforme a
   necessidade real do seu projeto.
+=======
+# 09-nexora-software-factory
+>>>>>>> e5bb489e75da1561c78dc8015fbbb86a40eef6c0
